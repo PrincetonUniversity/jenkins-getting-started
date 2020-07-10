@@ -1,38 +1,38 @@
 
 # Table of Contents
 
-1.  [Automatic Testing with Jenkins](#org1583bba)
-2.  [Your Internet Connection](#org7870577)
-3.  [Credentials for the Slave Node, GitHub and Jenkins](#orgafc7287)
-    1.  [GitHub Setup](#orgefd75ab)
-        1.  [Clone the Tutorial Repository on GitHub](#orgdf58ee6)
-        2.  [Add buildbot-princeton as a collaborator](#org3956da9)
-        3.  [Generate the ssh public and private keys](#orgcb68bda)
-        4.  [Copy the public key to your GitHub account](#orgc241e7f)
-        5.  [Copy the private key on your Jenkins account](#org353ff0f)
-    2.  [Slave Node Configuration](#org94eb91f)
-4.  [Setting Up A Build in Jenkins](#orgb06343a)
-    1.  [Creating a Simple Build with Manual Trigger](#orgbd8ac66)
-        1.  [Project Identity And Build Rotation](#orgd647dd0)
-        2.  [Slave Node](#org9022840)
-        3.  [Source Code Management (Git)](#orgdd5b203)
-        4.  [Add a test](#org944536c)
-        5.  [Add e-mail notifications](#orgd36aacc)
-    2.  [Automatically Trigger A Build When Someone Opens a Pull-Request](#org2d38df3)
-        1.  [Changes on the Jenkins Server](#org4ed1a4e)
-        2.  [Changes on GitHub](#org03f931a)
-        3.  [Open a Pull-Request To Test the New Settings](#orga53ea05)
+1.  [Automatic Testing with Jenkins](#orga7036b9)
+2.  [Your Internet Connection](#org41edd65)
+3.  [Credentials for the Agent Node, GitHub and Jenkins](#orgede9452)
+    1.  [GitHub Setup](#orgcda9488)
+        1.  [Clone the Tutorial Repository on GitHub](#org61129bb)
+        2.  [Add buildbot-princeton as a collaborator](#org04bfd89)
+        3.  [Generate the ssh public and private keys](#orgc872b45)
+        4.  [Copy the public key to your GitHub account](#org7d4ffc1)
+        5.  [Copy the private key on your Jenkins account](#org97809db)
+    2.  [Agent Node Configuration](#org2c56588)
+4.  [Setting Up A Build in Jenkins](#org42b890c)
+    1.  [Creating a Simple Build with Manual Trigger](#orgfacc8d4)
+        1.  [Project Identity And Build Rotation](#org20eb461)
+        2.  [Agent Node](#org2440717)
+        3.  [Source Code Management (Git)](#org52ba0f2)
+        4.  [Add a test](#org6bd16ce)
+        5.  [Add e-mail notifications](#orgd46d47f)
+    2.  [Automatically Trigger A Build When Someone Opens a Pull-Request](#org1f19f0a)
+        1.  [Changes on the Jenkins Server](#orgeaad92b)
+        2.  [Changes on GitHub](#orgd51e9d4)
+        3.  [Open a Pull-Request To Test the New Settings](#org868db87)
 
 
 
-<a id="org1583bba"></a>
+<a id="orga7036b9"></a>
 
 # Automatic Testing with Jenkins
 
 The system for automatic testing involves three components:
 
 1.  the source code, it usually comes from a **Source Control Management (SCM)** system, which is either git or subversion.
-2.  the computer where the tests are run, this is called the **slave node**.
+2.  the computer where the tests are run, this is called the **agent node**.
 3.  the Continuous Integration server, which is the **Jenkins server**.
 
 A typical sequence of events for a build is:
@@ -41,41 +41,41 @@ A typical sequence of events for a build is:
 2.  the SCM system sends a message to the Jenkins server saying that something has changed.
 3.  Jenkins starts running a test, this is called a **build** by:
     1.  fetching the changes from the SCM repository.
-    2.  running the tests on the slave nodes
+    2.  running the tests on the agent nodes
     3.  notifying the developers of the results of the tests.
 
 The goal of this tutorial is to demonstrate how to configure the different components to set up a test.
 We will use a Python code, available on GitHub, to define some simple tests.
 So the SCM system for this tutorial is git on GitHub.
 
-First we will check that you can connect to the Jenkins server in Section [2](#org4b58ddd).
-Then in Section [3](#orga4e62aa) we will configure the authentication between the three components of the testing system&#x2014;GitHub, the slave nodes and the Jenkins server&#x2014;so they can communicate with each other.
-In Section [4](#org62adb6f) we go through the steps to configure a build.
+First we will check that you can connect to the Jenkins server in Section [2](#orgabceb43).
+Then in Section [3](#orgb31abbe) we will configure the authentication between the three components of the testing system&#x2014;GitHub, the agent nodes and the Jenkins server&#x2014;so they can communicate with each other.
+In Section [4](#org001f92d) we go through the steps to configure a build.
 
 Throughout this tutorial, the figures are scaled to fit on the current screen, if you need a larger figure, you can usually right click on it and choose `Open Image in New Tab` or `Open Image in New Window`.
 
 
-<a id="org7870577"></a>
+<a id="org41edd65"></a>
 
 # Your Internet Connection
 
-<a id="org4b58ddd"></a>
+<a id="orgabceb43"></a>
 For security reasons, the [Jenkins server](https://jenkins.princeton.edu) is only accessible when your computer is connected to the campus network or when using a VPN like [GlobalProtect](https://princeton.service-now.com/service?sys_id=KB0012373&id=kb_article).
 
 
-<a id="orgafc7287"></a>
+<a id="orgede9452"></a>
 
-# Credentials for the Slave Node, GitHub and Jenkins
+# Credentials for the Agent Node, GitHub and Jenkins
 
-<a id="orga4e62aa"></a>
+<a id="orgb31abbe"></a>
 
 
-<a id="orgefd75ab"></a>
+<a id="orgcda9488"></a>
 
 ## GitHub Setup
 
 
-<a id="orgdf58ee6"></a>
+<a id="org61129bb"></a>
 
 ### Clone the Tutorial Repository on GitHub
 
@@ -90,7 +90,7 @@ To follow this tutorial, you need an account on [GitHub](https://github.com/). Y
 -   This will create a repository on <https://github.com/GitHubID/jenkins_tutorial>, where you should replace `GitHubID` by your GitHub ID.
 
 
-<a id="org3956da9"></a>
+<a id="org04bfd89"></a>
 
 ### Add buildbot-princeton as a collaborator
 
@@ -104,11 +104,11 @@ Your `Collaborators` and page on GitHub should look like this:
 ![img](./figures/GitHubCollaborator.png)
 
 
-<a id="orgcb68bda"></a>
+<a id="orgc872b45"></a>
 
 ### Generate the ssh public and private keys
 
-<a id="org0aec0c0"></a>
+<a id="org8c98c6e"></a>
 Now we are going to give the Jenkins server access to this GitHub repository using an ssh public/private key pair.
 
 -   Create a ssh public/private key pair on any machine that you have access to.
@@ -137,7 +137,7 @@ Now we are going to give the Jenkins server access to this GitHub repository usi
 For more help  on generating ssh keys, check the [GitHub documentation](https://help.github.com/categories/ssh/).
 
 
-<a id="orgc241e7f"></a>
+<a id="org7d4ffc1"></a>
 
 ### Copy the public key to your GitHub account
 
@@ -158,11 +158,11 @@ Here is a summary:
 -   Click `Add key`.
 
 
-<a id="org353ff0f"></a>
+<a id="org97809db"></a>
 
 ### Copy the private key on your Jenkins account
 
-<a id="orge40e082"></a>
+<a id="orga927afc"></a>
 Now we need to copy the private part of the key to your Jenkins account.
 
 -   Connect to <https://jenkins.princeton.edu> with your Princeton University netid/password.
@@ -192,7 +192,7 @@ Now we need to copy the private part of the key to your Jenkins account.
     -   Private key: `Enter directly`. And copy paste the content of the private 
         key file `id_rsa_github`.
     -   Passphrase: Enter the passphrase that you used when generating the 
-        ssh key in [3.1.3](#org0aec0c0).
+        ssh key in [3.1.3](#org8c98c6e).
     -   Description: enter something that will make it easy to select the right 
         credentials later. I use `jenkins_tutorial deploy`.
     
@@ -203,45 +203,45 @@ Now we need to copy the private part of the key to your Jenkins account.
     -   Click `Ok`.
 
 
-<a id="org94eb91f"></a>
+<a id="org2c56588"></a>
 
-## Slave Node Configuration
+## Agent Node Configuration
 
-Now we are going to give Jenkins access to the slave node.
-The name of the slave node is `slave`.
+Now we are going to give Jenkins access to the agent node.
+The name of the agent node is `agent`.
 
 The Jenkins system administrator will send you a file containing an 
-ssh public key named `id_rsa_slave_punetid.pub` that you need to copy on your 
-account on `slave`.
+ssh public key named `id_rsa_agent_punetid.pub` that you need to copy on your 
+account on `agent`.
 You can do it with the following steps:
 
-1.  copy the ssh public key on `slave`
+1.  copy the ssh public key on `agent`
     
-        $ scp id_rsa_slave_punetid.pub punetid@slave.princeton.edu:~/.
-2.  connect onto the slave host
+        $ scp id_rsa_agent_punetid.pub punetid@agent.princeton.edu:~/.
+2.  connect onto the agent host
     
-        $ ssh punetid@slave.princeton.edu
+        $ ssh punetid@agent.princeton.edu
 3.  make sure the directory `~/.ssh` exists and that the permissions are
     correct:
     
-        [punetid@slave] $ mkdir -p ~/.ssh
-        [punetid@slave] $ chmod 700 ~/.ssh
+        [punetid@agent] $ mkdir -p ~/.ssh
+        [punetid@agent] $ chmod 700 ~/.ssh
 4.  Append the public key to the file `~/.ssh/authorized_keys` and make sure 
     the permissions are correct:
     
-        [punetid@slave] $ cat id_rsa_slave_punetid.pub >> ~/.ssh/authorized_keys
-        [punetid@slave] $ chmod 600 ~/.ssh/authorized_keys
+        [punetid@agent] $ cat id_rsa_agent_punetid.pub >> ~/.ssh/authorized_keys
+        [punetid@agent] $ chmod 600 ~/.ssh/authorized_keys
 5.  Create a directory called `jenkins` in your home directory
     
-        [punetid@slave] $ mkdir ~/jenkins
+        [punetid@agent] $ mkdir ~/jenkins
 
 
-<a id="orgb06343a"></a>
+<a id="org42b890c"></a>
 
 # Setting Up A Build in Jenkins
 
-<a id="org62adb6f"></a>
-Now that we have set up all the necessary permissions between GitHub, Jenkins and the slave node, we are ready to configure some tests for the simple factorial code that is in your fork of the [PrincetonUniversity/jenkins<sub>tutorial</sub>](https://github.com/PrincetonUniversity/jenkins_tutorial) repository.
+<a id="org001f92d"></a>
+Now that we have set up all the necessary permissions between GitHub, Jenkins and the agent node, we are ready to configure some tests for the simple factorial code that is in your fork of the [PrincetonUniversity/jenkins<sub>tutorial</sub>](https://github.com/PrincetonUniversity/jenkins_tutorial) repository.
 
 When you save your configure, you will see a note pop-up like this one:
 
@@ -251,7 +251,7 @@ This is because the Jenkins configuration is saved in a Git repository itself. T
 In the pop-up menu, you can either enter a comment for this commit or leave it blank. Then click on `Submit comment`.
 
 
-<a id="orgbd8ac66"></a>
+<a id="orgfacc8d4"></a>
 
 ## Creating a Simple Build with Manual Trigger
 
@@ -270,7 +270,7 @@ In the pop-up menu, you can either enter a comment for this commit or leave it b
     ![img](./figures/NewFreeStyleProject.png)
 
 
-<a id="orgd647dd0"></a>
+<a id="org20eb461"></a>
 
 ### Project Identity And Build Rotation
 
@@ -282,23 +282,23 @@ First, to save disk space on the Jenkins server, we will only keep the build log
         
         ![img](./figures/DiscardOldBuilds.png)
 
--   Check the box `GitHub project`. In the `Project url` box enter the url for your project. On [the figure](#org4c1ab1f) it is:
+-   Check the box `GitHub project`. In the `Project url` box enter the url for your project. On [the figure](#org55ee19a) it is:
     
         https://github.com/luet/jenkins_tutorial
     
     because my GitHub login is `luet`.
 
 
-<a id="org9022840"></a>
+<a id="org2440717"></a>
 
-### Slave Node
+### Agent Node
 
-Check the box `Restrict where this project can be run`. In the `Label Expression` box enter the name of the slave that the Jenkins administrator gave you. In our case, `tiger1_luet` because the slave node name is `tiger1` and my Princeton netid is `luet`.
+Check the box `Restrict where this project can be run`. In the `Label Expression` box enter the name of the agent that the Jenkins administrator gave you. In our case, `tiger1_luet` because the agent node name is `tiger1` and my Princeton netid is `luet`.
 
 ![img](./figures/GitHubProjectRestrict.png)
 
 
-<a id="orgdd5b203"></a>
+<a id="org52ba0f2"></a>
 
 ### Source Code Management (Git)
 
@@ -308,12 +308,12 @@ Check the box `Restrict where this project can be run`. In the `Label Expression
         git@github.com:GitHubLogin/jenkins_tutorial.git
     
     where you should replace `GitHubLogin` with your GitHub login, which is `luet` in my case.
--   In the `Credentials` box select the Credential you entered in Section [3.1.5](#orge40e082). It appears as `luet (jenkins_tutorial deploy)` in the [screen snapshot](#org1b74482) below.
+-   In the `Credentials` box select the Credential you entered in Section [3.1.5](#orga927afc). It appears as `luet (jenkins_tutorial deploy)` in the [screen snapshot](#org1f5395e) below.
 -   In `Branches to build`, leave `*/master` for now.
 
 ![img](./figures/SCMGitSetup.png)
 
--   At this point you have enough to test whether the repository can be cloned on the slave. To do so, click the `Build Now` button on the upper left hand side toolbar.
+-   At this point you have enough to test whether the repository can be cloned on the agent. To do so, click the `Build Now` button on the upper left hand side toolbar.
     
     ![img](./figures/BuildNow.png)
     
@@ -322,10 +322,10 @@ Check the box `Restrict where this project can be run`. In the `Label Expression
 ![img](./figures/FirstBuild.png)
 
 The build should run for a while and when it stops, it should have a blue ball on the left of the number.
-You can also ssh onto the slave node directly and you should see that the jenkins<sub>tutorial</sub> repository was cloned in the directory `jenkins` in your home directory.
+You can also ssh onto the agent node directly and you should see that the jenkins<sub>tutorial</sub> repository was cloned in the directory `jenkins` in your home directory.
 
 
-<a id="org944536c"></a>
+<a id="org6bd16ce"></a>
 
 ### Add a test
 
@@ -335,7 +335,7 @@ We will now add a test. We don't specfify any `Build Triggers` for now, we will 
     
     ![img](./figures/AddBuildStep_ExecuteShell.png)
     
-    With the `Execute shell` you are basically given a shell on the slave.
+    With the `Execute shell` you are basically given a shell on the agent.
     The current directory for this shell is `$HOME/jenkins/folder_name/job_name`.
 
 -   In the `Execute shell` box we enter bash commands to run the test that comes with the git repository in the `tests` directory. Note that there is no space between `#!` and `/bin/bash`, Jenkins will fail if there is a space.
@@ -373,7 +373,7 @@ We will now add a test. We don't specfify any `Build Triggers` for now, we will 
     ![img](./figures/SimpleTestConsoleOutput.png)
 
 
-<a id="orgd36aacc"></a>
+<a id="orgd46d47f"></a>
 
 ### Add e-mail notifications
 
@@ -419,7 +419,7 @@ Now we will have Jenkins send you an e-mail each time a build is run.
 -   Click `Build Now` to run a build and you should receive an e-mail.
 
 
-<a id="org2d38df3"></a>
+<a id="org1f19f0a"></a>
 
 ## Automatically Trigger A Build When Someone Opens a Pull-Request
 
@@ -429,7 +429,7 @@ We will now add a build trigger that will start a build automatically when someo
 changes are tested **before** they are committed to the git repository.
 
 
-<a id="org4ed1a4e"></a>
+<a id="orgeaad92b"></a>
 
 ### Changes on the Jenkins Server
 
@@ -461,7 +461,7 @@ In the `Configure` menu:
 -   Click `Save` at the bottom of the page.
 
 
-<a id="org03f931a"></a>
+<a id="orgd51e9d4"></a>
 
 ### Changes on GitHub
 
@@ -483,7 +483,7 @@ You need to add a Webhook to your GitHub account. A Webhook is a mechanism for G
     
         https://jenkins.princeton.edu/ghprbhook/
     
-    (see [Screen shot](#org8710f2f) below).
+    (see [Screen shot](#orgecbe5e9) below).
 -   In the `Content type` box, select `application/json`
 -   In the box `Which events would you like to trigger this webhook?`, select:
     -   `Let me select individual events` and pick
@@ -498,7 +498,7 @@ You need to add a Webhook to your GitHub account. A Webhook is a mechanism for G
     ![img](./figures/GitHubWebhookTestMessage.png)
 
 
-<a id="orga53ea05"></a>
+<a id="org868db87"></a>
 
 ### Open a Pull-Request To Test the New Settings
 
