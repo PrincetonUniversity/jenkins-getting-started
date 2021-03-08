@@ -29,6 +29,8 @@
 
 # Automatic Testing with Jenkins
 
+Princeton University's Jenkins server is available to all campus members, but before you can use the server you need to request an account by sending an email to `cses@princeton.edu` with the subject line: `Jenkins account request`.
+
 The system for automatic testing involves three components:
 
 1.  the source code, it usually comes from a **Source Control Management (SCM)** system, which is either git or subversion.
